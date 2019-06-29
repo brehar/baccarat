@@ -1,10 +1,14 @@
 package game
 
+import java.text.NumberFormat
+
 import baccarat.State
 
 import scala.io.StdIn
 
 object GameRound {
+  final private val formatter = NumberFormat.getCurrencyInstance
+
   final def run(state: State): State = {
     state.showStatistics()
 
@@ -30,13 +34,13 @@ object GameRound {
 
     Thread.sleep(1000)
 
-    if (playerHand(2) != null) {
+    if (playerHand.length == 3) {
       println(s"Extra card for the player: ${playerHand(2)}")
       println(s"Player now shows $playerResult")
       Thread.sleep(1000)
     }
 
-    if (bankerHand(2) != null) {
+    if (bankerHand.length == 3) {
       println(s"Extra card for the bank: ${bankerHand(2)}")
       println(s"Banker now shows $bankerResult")
       Thread.sleep(1000)
@@ -93,7 +97,7 @@ object GameRound {
     val wager = StdIn.readDouble()
 
     if (wager > bankroll) {
-      println(s"You cannot bet more than your bankroll of $bankroll.")
+      println(s"You cannot bet more than your bankroll of ${formatter.format(bankroll)}.")
       getWager(bankroll)
     } else wager
   }
