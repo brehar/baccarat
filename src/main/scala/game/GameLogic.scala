@@ -29,14 +29,14 @@ object GameLogic {
     val bankerInitialScore = (bankerInitialHand.head.rank.value + bankerInitialHand(1).rank.value) % 10
 
     (playerInitialScore, bankerInitialScore) match {
-      case (6 | 7 | 8 | 9, 6 | 7 | 8 | 9) =>
+      case (6, 6) | (6, 7) | (7, 6) | (7, 7) | (8, _) | (9, _) | (_, 8) | (_, 9) =>
         compareHands(
           playerInitialScore,
           playerInitialHand,
           bankerInitialScore,
           bankerInitialHand,
           shoe.drop(4))
-      case (6 | 7, _) =>
+      case (6, _) | (7, _) =>
         val (bankerFinalScore, bankerFinalHand) = hit(bankerInitialHand, shoe(4))
         compareHands(
           playerInitialScore,
