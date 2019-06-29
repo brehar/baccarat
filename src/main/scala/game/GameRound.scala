@@ -19,6 +19,72 @@ object GameRound {
 
     val GameResult(outcome, playerResult, playerHand, bankerResult, bankerHand, shoe) =
       GameLogic.dealHand(state.shoe)
+
+    println(
+      s"Player shows ${(playerHand.head.rank.value + playerHand(1).rank.value) % 10}: ${playerHand.head} and ${playerHand(1)}")
+
+    Thread.sleep(200)
+
+    println(
+      s"Banker shows ${(bankerHand.head.rank.value + bankerHand(1).rank.value) % 10}: ${bankerHand.head} and ${bankerHand(1)}")
+
+    Thread.sleep(200)
+
+    if (playerHand(2) != null) {
+      println(s"Extra card for the player: ${playerHand(2)}")
+      println(s"Player now shows $playerResult")
+      Thread.sleep(200)
+    }
+
+    if (bankerHand(2) != null) {
+      println(s"Extra card for the bank: ${bankerHand(2)}")
+      println(s"Banker now shows $bankerResult")
+      Thread.sleep(200)
+    }
+
+    println(s"$outcome wins!")
+
+    outcome match {
+      case Banker =>
+        if (role == Banker)
+          new State(
+            shoe,
+            state.nrPlayer,
+            state.nrBanker + 1,
+            state.nrTie,
+            state.bankroll + 0.95 * wager - tieBetAmount)
+        else
+          new State(
+            shoe,
+            state.nrPlayer,
+            state.nrBanker + 1,
+            state.nrTie,
+            state.bankroll - wager - tieBetAmount)
+      case Player =>
+        if (role == Player)
+          new State(
+            shoe,
+            state.nrPlayer + 1,
+            state.nrBanker,
+            state.nrTie,
+            state.bankroll + wager - tieBetAmount)
+        else
+          new State(
+            shoe,
+            state.nrPlayer + 1,
+            state.nrBanker,
+            state.nrTie,
+            state.bankroll - wager - tieBetAmount)
+      case Tie =>
+        if (tieBet)
+          new State(
+            shoe,
+            state.nrPlayer,
+            state.nrBanker,
+            state.nrTie + 1,
+            state.bankroll + tieBetAmount * 8)
+        else new State(shoe, state.nrPlayer, state.nrBanker, state.nrTie + 1, state.bankroll)
+    }
   }
 
   @scala.annotation.tailrec
@@ -37,8 +103,8 @@ object GameRound {
     print("Select (P)layer or (B)anker: ")
     val role = StdIn.readLine()
 
-    if (role.toUpperCase == "B") Banker
-    else if (role.toUpperCase == "P") Player
+    if (role.trim.toUpperCase == "B") Banker
+    else if (role.trim.toUpperCase == "P") Player
     else {
       println("Invalid selection. Please try again.")
       getRole
@@ -50,8 +116,8 @@ object GameRound {
     print("Would you like to bet the tie? (Y/N) ")
     val tieBet = StdIn.readLine()
 
-    if (tieBet.toUpperCase == "Y") true
-    else if (tieBet.toUpperCase == "N") false
+    if (tieBet.trim.toUpperCase == "Y") true
+    else if (tieBet.trim.toUpperCase == "N") false
     else {
       println("Invalid selection. Please try again.")
       `tieBet?`
