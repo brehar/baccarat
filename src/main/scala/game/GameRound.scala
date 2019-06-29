@@ -23,23 +23,23 @@ object GameRound {
     println(
       s"Player shows ${(playerHand.head.rank.value + playerHand(1).rank.value) % 10}: ${playerHand.head} and ${playerHand(1)}")
 
-    Thread.sleep(200)
+    Thread.sleep(1000)
 
     println(
       s"Banker shows ${(bankerHand.head.rank.value + bankerHand(1).rank.value) % 10}: ${bankerHand.head} and ${bankerHand(1)}")
 
-    Thread.sleep(200)
+    Thread.sleep(1000)
 
     if (playerHand(2) != null) {
       println(s"Extra card for the player: ${playerHand(2)}")
       println(s"Player now shows $playerResult")
-      Thread.sleep(200)
+      Thread.sleep(1000)
     }
 
     if (bankerHand(2) != null) {
       println(s"Extra card for the bank: ${bankerHand(2)}")
       println(s"Banker now shows $bankerResult")
-      Thread.sleep(200)
+      Thread.sleep(1000)
     }
 
     println(s"$outcome wins!")
