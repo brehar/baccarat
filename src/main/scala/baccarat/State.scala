@@ -23,9 +23,9 @@ class State(
     println("–" * 50)
   }
 
-  private def cardsRemaining: Int = (shoe.length - Shoe.NUMBER_DECKS_UNUSED * 52).toInt
+  final def shoeOver: Boolean = cardsRemaining < 0
 
-  private def shoeOver: Boolean = cardsRemaining < 0
+  final private def cardsRemaining: Int = (shoe.length - Shoe.NUMBER_DECKS_UNUSED * 52).toInt
 }
 
 object State {
