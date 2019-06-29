@@ -1,10 +1,14 @@
 package baccarat
 
+import java.text.NumberFormat
+
 import game.GameRound
 
 import scala.io.StdIn
 
 object Baccarat extends App {
+  private final val formatter = NumberFormat.getCurrencyInstance
+
   val state = State()
 
   gameCycle(state)
@@ -13,7 +17,7 @@ object Baccarat extends App {
   final private def gameCycle(state: State): Unit = {
     if (state.shoeOver) {
       println(
-        s"The shoe has been concluded. Your final bankroll is ${state.bankroll}. Thank you for playing!")
+        s"The shoe has been concluded. Your final bankroll is ${formatter.format(state.bankroll)}. Thank you for playing!")
       sys.exit(0)
     }
 
@@ -21,7 +25,8 @@ object Baccarat extends App {
 
     if (`playAgain?`) gameCycle(newState)
     else {
-      println(s"Your final bankroll is ${newState.bankroll}. Thank you for playing. Goodbye!")
+      println(
+        s"Your final bankroll is ${formatter.format(newState.bankroll)}. Thank you for playing. Goodbye!")
       sys.exit(0)
     }
   }
