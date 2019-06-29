@@ -1,10 +1,20 @@
 package baccarat
 
+import java.text.NumberFormat
+
 import cards.{ Card, Shoe }
 
-class State(val shoe: List[Card], val nrPlayer: Int = 0, val nrBanker: Int = 0, nrTie: Int = 0) {
+class State(
+    val shoe: List[Card],
+    val nrPlayer: Int = 0,
+    val nrBanker: Int = 0,
+    val nrTie: Int = 0,
+    val bankroll: Double = 1000.00) {
+  private final val formatter = NumberFormat.getCurrencyInstance
+
   def showStatistics(): Unit = {
     println("–" * 50)
+    println(s"Bankroll   : ${formatter.format(bankroll)}")
     println(s"Hands Dealt: ${nrPlayer + nrBanker + nrTie}")
     println(s"Player Wins: $nrPlayer")
     println(s"Banker Wins: $nrBanker")
@@ -15,7 +25,7 @@ class State(val shoe: List[Card], val nrPlayer: Int = 0, val nrBanker: Int = 0, 
 
   private def cardsRemaining: Int = (shoe.length - Shoe.NUMBER_DECKS_UNUSED * 52).toInt
 
-  private def shoeOver: Boolean = cardsRemaining <= 0
+  private def shoeOver: Boolean = cardsRemaining < 0
 }
 
 object State {
