@@ -29,83 +29,67 @@ object GameLogic {
     val bankerInitialScore = (bankerInitialHand.head.rank.value + bankerInitialHand(1).rank.value) % 10
 
     (playerInitialScore, bankerInitialScore) match {
-      case (9, 9) => GameResult(Tie, 9, playerInitialHand, 9, bankerInitialHand, shoe.drop(4))
-      case (9, _) =>
-        GameResult(
-          Player,
-          9,
+      case (6 | 7 | 8 | 9, 6 | 7 | 8 | 9) =>
+        compareHands(
+          playerInitialScore,
           playerInitialHand,
           bankerInitialScore,
           bankerInitialHand,
           shoe.drop(4))
-      case (_, 9) =>
-        GameResult(
-          Banker,
-          playerInitialScore,
-          playerInitialHand,
-          9,
-          bankerInitialHand,
-          shoe.drop(4))
-      case (8, 8) => GameResult(Tie, 8, playerInitialHand, 8, bankerInitialHand, shoe.drop(4))
-      case (8, _) =>
-        GameResult(
-          Player,
-          8,
-          playerInitialHand,
-          bankerInitialScore,
-          bankerInitialHand,
-          shoe.drop(4))
-      case (_, 8) =>
-        GameResult(
-          Banker,
-          playerInitialScore,
-          playerInitialHand,
-          8,
-          bankerInitialHand,
-          shoe.drop(4))
-      case (7, 7) => GameResult(Tie, 7, playerInitialHand, 7, bankerInitialHand, shoe.drop(4))
-      case (7, 6) => GameResult(Player, 7, playerInitialHand, 6, bankerInitialHand, shoe.drop(4))
-      case (6, 7) => GameResult(Banker, 6, playerInitialHand, 7, bankerInitialHand, shoe.drop(4))
-      case (7, _) =>
+      case (6 | 7, _) =>
         val (bankerFinalScore, bankerFinalHand) = hit(bankerInitialHand, shoe(4))
 
-        bankerFinalScore match {
-          case x @ (8 | 9) =>
-            GameResult(Banker, 7, playerInitialHand, x, bankerFinalHand, shoe.drop(5))
-          case 7 => GameResult(Tie, 7, playerInitialHand, 7, bankerFinalHand, shoe.drop(5))
-          case _ =>
-            GameResult(
-              Player,
-              7,
-              playerInitialHand,
-              bankerFinalScore,
-              bankerFinalHand,
-              shoe.drop(5))
-        }
+        compareHands(
+          playerInitialScore,
+          playerInitialHand,
+          bankerFinalScore,
+          bankerFinalHand,
+          shoe.drop(5))
       case (_, 7) =>
         val (playerFinalScore, playerFinalHand) = hit(playerInitialHand, shoe(4))
 
-        playerFinalScore match {
-          case x @ (8 | 9) =>
-            GameResult(Player, x, playerFinalHand, 7, bankerInitialHand, shoe.drop(5))
-          case 7 => GameResult(Tie, 7, playerFinalHand, 7, bankerInitialHand, shoe.drop(5))
-          case _ =>
-            GameResult(
-              Banker,
+        compareHands(
+          playerFinalScore,
+          playerFinalHand,
+          bankerInitialScore,
+          bankerInitialHand,
+          shoe.drop(5))
+      case (_, 6) =>
+        val playerHitCard = shoe(4)
+        val (playerFinalScore, playerFinalHand) = hit(playerInitialHand, playerHitCard)
+
+        playerHitCard.rank.value match {
+          case 6 | 7 =>
+            val (bankerFinalScore, bankerFinalHand) = hit(bankerInitialHand, shoe(5))
+
+            compareHands(
               playerFinalScore,
               playerFinalHand,
-              7,
-              bankerInitialHand,
-              shoe.drop(5))
+              bankerFinalScore,
+              bankerFinalHand,
+              shoe.drop(6))
+          case _ =>
+            compareHands(playerFinalScore, playerFinalHand, 6, bankerInitialHand, shoe.drop(5))
         }
-      case (6, 6) => GameResult(Tie, 6, playerInitialHand, 6, bankerInitialHand, shoe.drop(4))
     }
   }
 
-  private def hit(hand: List[Card], card: Card): (Int, List[Card]) = {
+  private final def hit(hand: List[Card], card: Card): (Int, List[Card]) = {
     val finalHand = hand ++ List(card)
     val finalScore = (finalHand.head.rank.value + finalHand(1).rank.value + finalHand(2).rank.value) % 10
 
     (finalScore, finalHand)
   }
+
+  private final def compareHands(
+      playerScore: Int,
+      playerHand: List[Card],
+      bankerScore: Int,
+      bankerHand: List[Card],
+      shoe: List[Card]): GameResult =
+    if (playerScore > bankerScore)
+      GameResult(Player, playerScore, playerHand, bankerScore, bankerHand, shoe)
+    else if (playerScore < bankerScore)
+      GameResult(Banker, playerScore, playerHand, bankerScore, bankerHand, shoe)
+    else GameResult(Tie, playerScore, playerHand, bankerScore, bankerHand, shoe)
 }
