@@ -38,39 +38,31 @@ object GameLogic {
           shoe.drop(4))
       case (6 | 7, _) =>
         val (bankerFinalScore, bankerFinalHand) = hit(bankerInitialHand, shoe(4))
-
         compareHands(
           playerInitialScore,
           playerInitialHand,
           bankerFinalScore,
           bankerFinalHand,
           shoe.drop(5))
-      case (_, 7) =>
-        val (playerFinalScore, playerFinalHand) = hit(playerInitialHand, shoe(4))
-
-        compareHands(
-          playerFinalScore,
-          playerFinalHand,
-          bankerInitialScore,
-          bankerInitialHand,
-          shoe.drop(5))
-      case (_, 6) =>
+      case (_, _) =>
         val playerHitCard = shoe(4)
         val (playerFinalScore, playerFinalHand) = hit(playerInitialHand, playerHitCard)
 
-        playerHitCard.rank.value match {
-          case 6 | 7 =>
-            val (bankerFinalScore, bankerFinalHand) = hit(bankerInitialHand, shoe(5))
-
-            compareHands(
-              playerFinalScore,
-              playerFinalHand,
-              bankerFinalScore,
-              bankerFinalHand,
-              shoe.drop(6))
-          case _ =>
-            compareHands(playerFinalScore, playerFinalHand, 6, bankerInitialHand, shoe.drop(5))
-        }
+        if (`hitBankHand?`(bankerInitialScore, playerHitCard.rank.value)) {
+          val (bankerFinalScore, bankerFinalHand) = hit(bankerInitialHand, shoe(5))
+          compareHands(
+            playerFinalScore,
+            playerFinalHand,
+            bankerFinalScore,
+            bankerFinalHand,
+            shoe.drop(6))
+        } else
+          compareHands(
+            playerFinalScore,
+            playerFinalHand,
+            bankerInitialScore,
+            bankerInitialHand,
+            shoe.drop(5))
     }
   }
 
@@ -80,6 +72,16 @@ object GameLogic {
 
     (finalScore, finalHand)
   }
+
+  private final def `hitBankHand?`(bankerInitialScore: Int, playerHitCardValue: Int): Boolean =
+    bankerInitialScore match {
+      case 7 => false
+      case 6 => if (playerHitCardValue == 6 || playerHitCardValue == 7) true else false
+      case 5 => if (playerHitCardValue >= 4 && playerHitCardValue <= 7) true else false
+      case 4 => if (playerHitCardValue >= 2 && playerHitCardValue <= 7) true else false
+      case 3 => if (playerHitCardValue != 8) true else false
+      case _ => true
+    }
 
   private final def compareHands(
       playerScore: Int,
